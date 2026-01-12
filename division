@@ -1,0 +1,60 @@
+local uis = game:GetService("UserInputService")
+if not uis.TouchEnabled or uis.KeyboardEnabled then return end
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local lastPos = hrp.Position
+local checkInterval = 0.3
+
+local function showWarning()
+    local sg = Instance.new("ScreenGui", player.PlayerGui)
+    sg.ResetOnSpawn = false
+    local tl = Instance.new("TextLabel", sg)
+    tl.Size = UDim2.new(1, 0, 1, 0)
+    tl.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    tl.TextColor3 = Color3.fromRGB(255, 50, 50)
+    tl.Font = Enum.Font.GothamBold
+    tl.TextSize = 50
+    tl.Text = "АНТИЧИТ ВАС ЗАМЕТИЛ!!"
+    tl.Parent = sg
+    task.wait(5)
+    sg:Destroy()
+end
+
+player.CharacterAdded:Connect(function(newChar)
+    char = newChar
+    hum = char:WaitForChild("Humanoid")
+    hrp = char:WaitForChild("HumanoidRootPart")
+    lastPos = hrp.Position
+end)
+
+task.spawn(function()
+    while task.wait(checkInterval) do
+        pcall(function()
+            if hum.WalkSpeed > 40 then
+                showWarning()
+            end
+            
+            if hum.JumpPower > 80 or hum.JumpHeight > 12 then
+                showWarning()
+            end
+            
+            local state = hum:GetState()
+            if hrp.AssemblyLinearVelocity.Y > 25 and state ~= Enum.HumanoidStateType.Jumping then
+                showWarning()
+            end
+            
+            local dist = (hrp.Position - lastPos).Magnitude
+            local speed = dist / checkInterval
+            
+            if speed > 200 then
+                showWarning()
+            end
+            
+            lastPos = hrp.Position
+        end)
+    end
+end)
